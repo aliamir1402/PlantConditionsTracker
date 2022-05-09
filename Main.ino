@@ -29,13 +29,11 @@ float distanceCm;
 float temp;
 float humd;
 
-
-// To send Emails using Gmail on port 465 (SSL), you need to create an app password: https://support.google.com/accounts/answer/185833
 #define emailSenderAccount    "caoproject03@gmail.com"
 #define emailSenderPassword   "vgflnpucnieenjqy"
 #define smtpServer            "smtp.gmail.com"
 #define smtpServerPort        465
-#define emailSubject          "[ALERT] ESP32 Temperature"
+#define emailSubject          "[ALERT] Plant Detection"
 
 // Default Recipient Email Address
 String inputMessage = "aliamirkhawaja1@gmail.com";
@@ -231,13 +229,12 @@ void loop(){
  
     temp = dht_sensor.readTemperature();
     humd = dht_sensor.readHumidity();
-    Serial.print(temp);
-    Serial.println("'C");
-    if ( temp >= 35.0 || humd >= 40 || distanceCm < 20) // checks whether the temperature is within range, if not blinks led
+    
+    if ( temp >= 35.0 ) // checks whether the temperature is within range, if not blinks led
       {
         digitalWrite(23,HIGH);
         digitalWrite(22,LOW);
-        String emailMessage = String("Details:  Temperature above threshold. Current temperature: ") + 
+        String emailMessage = String("Details:  Temperature Above Threshold. Current Temperature: ") + 
                           String(temp) + String("°C  Humidity is ") + String(humd) + String("  Distance: ") + String(distanceCm);
         if(sendEmailNotification(emailMessage)) 
             {
@@ -258,7 +255,7 @@ void loop(){
       {
         digitalWrite(23,LOW);
         digitalWrite(22,HIGH);
-        String emailMessage = String("Details:\nTemperature Below threshold. Current temperature: ") + 
+        String emailMessage = String("Details:\nTemperature Below Threshold. Current Temperature: ") + 
                           String(temp) + String("°C\nHumidity is ") + String(humd) + String("  Distance: ") + String(distanceCm);
         if(sendEmailNotification(emailMessage)) 
             {
@@ -274,8 +271,43 @@ void loop(){
       {
         digitalWrite(22,LOW);  
       }
+
+  if (  humd < 40 ) // checks whether the plant is needs water or not
+      {
+        digitalWrite(23,HIGH);
+        digitalWrite(22,LOW);
+        String emailMessage = String("Details:  Humidity below 40% Threshold. Plant Needs Water. \n Current Temperature: ") + 
+                          String(temp) + String("°C  Humidity is ") + String(humd) + String("  Distance: ") + String(distanceCm);
+        if(sendEmailNotification(emailMessage)) 
+            {
+                Serial.println(emailMessage);
+                emailSent = true;
+            }
+         else 
+            {
+              Serial.println("Email failed to send");
+            }    
+      }
+    
+    if ( distanceCm < 20) // checks whether the distance is less than 20
+      {
+        digitalWrite(23,HIGH);
+        digitalWrite(22,LOW);
+        String emailMessage = String("Details: Something Is Near The Plant. \nCurrent Temperature: ") + 
+                          String(temp) + String("°C  Humidity is ") + String(humd) + String("  Distance: ") + String(distanceCm);
+        if(sendEmailNotification(emailMessage)) 
+            {
+                Serial.println(emailMessage);
+                emailSent = true;
+            }
+         else 
+            {
+              Serial.println("Email failed to send");
+            }    
+      }
+     
       
-    if (humd >= 40)
+    if (humd < 40)//on board led blinks green if dry
     {
       digitalWrite(14,HIGH);
     }
@@ -315,8 +347,6 @@ bool sendEmailNotification(String emailMessage){
   // Add recipients
   smtpData.addRecipient(inputMessage);
 
-  smtpData.setSendCallback(sendCallback);
-
   // Start sending Email, can be set callback function to track the status
   if (!MailClient.sendMail(smtpData)) {
     Serial.println("Error sending Email, " + MailClient.smtpErrorReason());
@@ -325,16 +355,6 @@ bool sendEmailNotification(String emailMessage){
   // Clear all data from Email object to free memory
   smtpData.empty();
   return true;
-}
-// Callback function to get the Email sending status
-void sendCallback(SendStatus msg) {
-  // Print the current status
-  Serial.println(msg.info());
-
-  // Do something when complete
-  if (msg.success()) {
-    Serial.println("----------------");
-  }
 }
 
 //PASSWORD vgflnpucnieenjqy for email 
