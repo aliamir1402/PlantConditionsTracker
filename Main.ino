@@ -91,9 +91,9 @@ float temperature;
 float humidity;
 float ultrasonic;
 
-// Timer variables (send new readings every three minutes)
+// Timer variables (send new readings every 5 secs)
 unsigned long sendDataPrevMillis = 0;
-unsigned long timerDelay = 10000;
+unsigned long timerDelay = 5000;
 
 
 // Initialize WiFi
@@ -230,7 +230,7 @@ void loop(){
     temp = dht_sensor.readTemperature();
     humd = dht_sensor.readHumidity();
     
-    if ( temp >= 35.0 ) // checks whether the temperature is within range, if not blinks led
+    if ( temp >= 35 ) // checks whether the temperature is within range, if not blinks led
       {
         digitalWrite(23,HIGH);
         digitalWrite(22,LOW);
@@ -246,7 +246,7 @@ void loop(){
               Serial.println("Email failed to send");
             }    
       }
-      else
+      else 
       {
         digitalWrite(23,LOW);
       }
@@ -267,15 +267,13 @@ void loop(){
               Serial.println("Email failed to send");
             }    
       }
-      else
+      else 
       {
         digitalWrite(22,LOW);  
       }
 
   if (  humd < 40 ) // checks whether the plant is needs water or not
       {
-        digitalWrite(23,HIGH);
-        digitalWrite(22,LOW);
         String emailMessage = String("Details:  Humidity below 40% Threshold. Plant Needs Water. \n Current Temperature: ") + 
                           String(temp) + String("°C  Humidity is ") + String(humd) + String("  Distance: ") + String(distanceCm);
         if(sendEmailNotification(emailMessage)) 
@@ -288,6 +286,15 @@ void loop(){
               Serial.println("Email failed to send");
             }    
       }
+
+       if (humd < 40)//on board led blinks green if dry
+    {
+      digitalWrite(14,HIGH);
+    }
+    else 
+    {
+       digitalWrite(14,LOW);
+    }
     
     if ( distanceCm < 20) // checks whether the distance is less than 20
       {
@@ -307,14 +314,7 @@ void loop(){
       }
      
       
-    if (humd < 40)//on board led blinks green if dry
-    {
-      digitalWrite(14,HIGH);
-    }
-    else 
-    {
-       digitalWrite(14,LOW);
-    }
+   
     
     json.set(tempPath.c_str(), String(dht_sensor.readTemperature()));
     json.set(humPath.c_str(), String(dht_sensor.readHumidity()));
