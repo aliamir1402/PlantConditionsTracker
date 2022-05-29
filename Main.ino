@@ -230,12 +230,12 @@ void loop(){
     temp = dht_sensor.readTemperature();
     humd = dht_sensor.readHumidity();
     
-    if ( temp >= 35 ) // checks whether the temperature is within range, if not blinks led
+    if ( temp >= 35 ) // checks whether the temperature is within above range, if yes blink red led
       {
         digitalWrite(23,HIGH);
         digitalWrite(22,LOW);
         String emailMessage = String("Details:  Temperature Above Threshold. Current Temperature: ") + 
-                          String(temp) + String("°C  Humidity is ") + String(humd) + String("  Distance: ") + String(distanceCm);
+                          String(temp) + String("°C  Humidity is ") + String(humd) + String("  Distance: ") + String(distanceCm)+ String("cm.");
         if(sendEmailNotification(emailMessage)) 
             {
                 Serial.println(emailMessage);
@@ -248,15 +248,15 @@ void loop(){
       }
       else 
       {
-        digitalWrite(23,LOW);
+        digitalWrite(23,LOW); //else turn off red led 
       }
       
-     if ( temp <= 15.0)
+     if ( temp <= 15.0) // checks whether the temperature is within below range, if yes blink yellow led
       {
         digitalWrite(23,LOW);
         digitalWrite(22,HIGH);
         String emailMessage = String("Details:\nTemperature Below Threshold. Current Temperature: ") + 
-                          String(temp) + String("°C\nHumidity is ") + String(humd) + String("  Distance: ") + String(distanceCm);
+                          String(temp) + String("°C\nHumidity is ") + String(humd) + String("  Distance: ") + String(distanceCm)+ String("cm.");
         if(sendEmailNotification(emailMessage)) 
             {
                 Serial.println(emailMessage);
@@ -269,13 +269,13 @@ void loop(){
       }
       else 
       {
-        digitalWrite(22,LOW);  
+        digitalWrite(22,LOW);  //else turn off yellow led 
       }
 
-  if (  humd < 40 ) // checks whether the plant is needs water or not
+  if (  humd < 40 ) // checks whether the plant is needs water or not, if below 40% dry and if above means does not need water
       {
         String emailMessage = String("Details:  Humidity below 40% Threshold. Plant Needs Water. \n Current Temperature: ") + 
-                          String(temp) + String("°C  Humidity is ") + String(humd) + String("  Distance: ") + String(distanceCm);
+                          String(temp) + String("°C  Humidity is ") + String(humd) + String("  Distance: ") + String(distanceCm)+ String("cm.");
         if(sendEmailNotification(emailMessage)) 
             {
                 Serial.println(emailMessage);
@@ -296,12 +296,12 @@ void loop(){
        digitalWrite(14,LOW);
     }
     
-    if ( distanceCm < 20) // checks whether the distance is less than 20
+    if ( distanceCm < 20) // checks whether the distance is less than 20cm
       {
         digitalWrite(23,HIGH);
         digitalWrite(22,LOW);
         String emailMessage = String("Details: Something Is Near The Plant. \nCurrent Temperature: ") + 
-                          String(temp) + String("°C  Humidity is ") + String(humd) + String("  Distance: ") + String(distanceCm);
+                          String(temp) + String("°C  Humidity is ") + String(humd) + String("  Distance: ") + String(distanceCm) + String("cm.");
         if(sendEmailNotification(emailMessage)) 
             {
                 Serial.println(emailMessage);
