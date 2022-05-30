@@ -9,3 +9,6 @@ DHT22
 Copy the code in the ide.
 Change the Wifi Details, Email addresses accordingly.
 Upload the code on the ESP-32 module.
+
+
+Video Demonstration Link: https://youtu.be/AagiuHaCZkc
