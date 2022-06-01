@@ -122,7 +122,7 @@ unsigned long getTime() {
 //---------------------------------------------------------------------------------------------------------------------
 void setup(){
   Serial.begin(115200);
-  pinMode(22,OUTPUT);//Temp < 35'C
+  pinMode(22,OUTPUT);//Temp < 15'C
   pinMode(23,OUTPUT);//Temp > 35'C
   pinMode(12,OUTPUT);//WiFi NotConnected
   pinMode(13,OUTPUT);//WiFi Connected
@@ -225,7 +225,7 @@ void loop(){
   duration = pulseIn(echoPin, HIGH);
   
   // Calculate the distance
-  distanceCm = (duration) * SOUND_SPEED/2;
+  distanceCm = ((duration) * SOUND_SPEED)/2;
  
     temp = dht_sensor.readTemperature();
     humd = dht_sensor.readHumidity();
